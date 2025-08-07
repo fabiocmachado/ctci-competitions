@@ -110,3 +110,8 @@ firebase-service-account.json
 # IDEA misc
 # ================================
 .idea_modules/
+
+.idea/
+src/main/resources/application.properties
+.idea/
+src/main/resources/application.properties
