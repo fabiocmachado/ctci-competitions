@@ -1,9 +1,16 @@
 package com.ctci.domain.model;
 
 import jakarta.persistence.*;
+import jakarta.servlet.Registration;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "shooters")
@@ -11,28 +18,58 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(of = "id")
+@ToString(exclude = {"registrations", "awards", "notificationRequests"})
 public class Shooter {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String firstName;
+    @Column(nullable = false)
+    private String name;
 
-    private String lastName;
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    private String phone;
+
+    @Column(name = "push_token", length = 500)
+    private String pushToken;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ShooterCategory category;
+
+    @Column(name = "license_number")
+    private String licenseNumber;
 
     @Column(name = "origin_club")
     private String originClub;
 
-    @ElementCollection(targetClass = Specialty.class)
-    @CollectionTable(name = "shooter_specialties", joinColumns = @JoinColumn(name = "shooter_id"))
-    @Enumerated(EnumType.STRING)
-    @Column(name = "specialty")
-    private List<Specialty> specialties;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<String> specialties;
 
-    @Enumerated(EnumType.STRING)
-    private ShooterCategory category;
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean active = true;
 
-    @Enumerated(EnumType.STRING)
-    private ShooterStatus status;
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    // Relationships
+    @OneToMany(mappedBy = "shooter", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Registration> registrations;
+
+    @OneToMany(mappedBy = "shooter", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Award> awards;
+
+    @OneToMany(mappedBy = "shooter", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<NotificationRequest> notificationRequests;
 }
+
