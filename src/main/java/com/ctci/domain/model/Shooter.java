@@ -1,7 +1,6 @@
 package com.ctci.domain.model;
 
 import jakarta.persistence.*;
-import jakarta.servlet.Registration;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
